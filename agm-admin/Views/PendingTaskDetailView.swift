@@ -1,9 +1,9 @@
 import SwiftUI
 
-struct LeadDetailView: View {
-    let leadID: String
-    @State private var lead: Lead?
-    @State private var followUps: [FollowUp] = []
+struct PendingTaskDetailView: View {
+    let taskID: String
+    @State private var task: PendingTask?
+    @State private var followUps: [PendingTaskFollowUp] = []
     @State private var isLoading = true
 
     var body: some View {
@@ -11,12 +11,12 @@ struct LeadDetailView: View {
             if isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if let lead {
+            } else if let task {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Description")
                             .font(.title3.bold())
-                        Text(lead.description)
+                        Text(task.description)
                             .font(.body)
                         Divider()
                         Text("Follow-ups")
@@ -35,14 +35,14 @@ struct LeadDetailView: View {
                     .padding()
                 }
             } else {
-                Text("Lead not found")
+                Text("Task not found")
             }
         }
-        .navigationTitle("Lead")
+        .navigationTitle("Task")
         .task { await fetch() }
         .toolbar {
-            if let lead {
-                NavigationLink("Edit", destination: LeadFormView(existingLead: lead, onComplete: { Task { await fetch() } }))
+            if let task {
+                NavigationLink("Edit", destination: PendingTaskFormView(existingTask: task, onComplete: { Task { await fetch() } }))
             }
         }
     }
@@ -50,8 +50,8 @@ struct LeadDetailView: View {
     private func fetch() async {
         isLoading = true
         do {
-            let (leads, followUps) = try await LeadService.shared.readLead(by: leadID)
-            self.lead = leads.first
+            let (tasks, followUps) = try await PendingTaskService.shared.readTask(by: taskID)
+            self.task = tasks.first
             self.followUps = followUps
         } catch {
             print("Failed fetch: \(error)")
@@ -61,5 +61,5 @@ struct LeadDetailView: View {
 }
 
 #Preview {
-    LeadDetailView(leadID: "demo")
+    PendingTaskDetailView(taskID: "demo")
 }

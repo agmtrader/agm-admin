@@ -1,0 +1,84 @@
+---
+alwaysApply: true
+---
+
+Follow these rules for every new API “entity” you introduce (Account, Advisor, Lead, …).  
+They mirror exactly what we just did for `User`, so you can almost copy-paste with find/replace.
+
+1. Files & locations  
+   • Models → `Models/<Entity>Models.swift`  
+   • Networking → already handled by generic `ApiClient`  
+   • Services → `Services/<Entity>Service.swift` (an `actor` singleton)  
+   • Views →  
+      `Views/<Entity>ListView.swift`  
+      `Views/<Entity>DetailView.swift`  
+      `Views/<Entity>CardView.swift` (read-only grid)  
+      `Views/<Entity>FormView.swift` (create / update)
+
+2. Model file template
+```swift
+// MARK: - <Entity>Payload
+struct <Entity>Payload: Codable {
+    /* properties used on create/update */
+}
+
+// MARK: - <Entity>
+struct <Entity>: Codable, Identifiable {
+    let id: String
+    /* same props as backend “read” */
+}
+```
+Include `CodingKeys` only when the snake_case coming from backend differs.
+
+3. Service template
+```swift
+actor <Entity>Service {
+    static let shared = <Entity>Service()
+
+    func create(entity: <Entity>Payload) async throws -> IDResponse { …post("/<plural>/create")… }
+    func read<plural>() async throws -> [<Entity>] { …get("/<plural>/read")… }
+    func readEntity(by id: String) async throws -> <Entity>? { …get("/<plural>/read?id=")… }
+    func updateEntity(by id: String, entity: <Entity>Payload) async throws -> IDResponse { …post("/<plural>/update")… }
+}
+```
+(Deletions optional.)
+
+4. CardView (read-only)
+```swift
+struct <Entity>CardView: View {
+    let entity: <Entity>
+    // grid layout identical to UserCardView
+}
+```
+
+5. FormView (create & update)
+Copy `UserFormView`; replace fields and payload mapping.  
+Expose:
+```swift
+init(existingEntity: <Entity>? = nil, onComplete: (() -> Void)? = nil)
+```
+
+6. ListView
+• Holds an `@StateObject ViewModel` with `fetch<plural>()` calling service.read<plural>().  
+• Displays list of entities → `NavigationLink` to Detail.  
+• Toolbar: `NavigationLink` with “plus” icon to `<Entity>FormView(onComplete: fetch)`.
+
+7. DetailView
+• `@State var entity: <Entity>?` fetched on `.task`.  
+• Shows `<Entity>CardView`.  
+• Toolbar: `NavigationLink("Edit", destination: <Entity>FormView(existingEntity: entity, onComplete: fetch))`.
+
+8. ContentView (root menu)
+Add another `NavigationLink("<plural>")` to new `<Entity>ListView`.
+
+9. Naming rules
+• Singular for structs, plural for endpoints and list view titles.  
+• Title-case for View names, camelCase for vars.  
+• Keep UI texts human friendly: “Accounts”, “New Account”, “Edit Account”, etc.
+
+10. Code style
+• Use `NavigationStack`, `.task { await fetch() }`, `ProgressView` for loading.  
+• Validation: require mandatory fields, same simple guard as UserFormView.  
+• Use `@Environment(\\.dismiss)` for closing FormView and call `onComplete`.
+
+With this checklist you can clone & adapt in minutes.

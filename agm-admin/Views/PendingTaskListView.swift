@@ -2,27 +2,26 @@ import SwiftUI
 import Combine
 
 @MainActor
-final class LeadsListViewModel: ObservableObject {
-    @Published var leads: [Lead] = []
-    @Published var followUps: [FollowUp] = []
+final class PendingTaskListViewModel: ObservableObject {
+    @Published var tasks: [PendingTask] = []
+    @Published var followUps: [PendingTaskFollowUp] = []
     @Published var isLoading: Bool = false
     @Published var showClosed: Bool = false {
         didSet { applyFilter() }
     }
 
-    private var allLeads: [Lead] = []
+    private var allTasks: [PendingTask] = []
 
-    func fetchLeads() {
+    func fetchTasks() {
         isLoading = true
         Task {
             do {
-                let (fetchedLeads, fetchedFollowUps) = try await LeadService.shared.readLeads()
+                let (fetchedTasks, fetchedFollowUps) = try await PendingTaskService.shared.readTasks()
                 self.followUps = fetchedFollowUps
-                self.allLeads = fetchedLeads.sorted { $0.contactDate > $1.contactDate }
+                self.allTasks = fetchedTasks.sorted { $0.date > $1.date }
                 self.applyFilter()
             } catch {
-                // TODO: proper error handling / toast
-                print("Failed to fetch leads: \(error)")
+                print("Failed to fetch pending tasks: \(error)")
             }
             self.isLoading = false
         }
@@ -30,38 +29,36 @@ final class LeadsListViewModel: ObservableObject {
 
     private func applyFilter() {
         if showClosed {
-            leads = allLeads
+            tasks = allTasks
         } else {
-            leads = allLeads.filter { $0.closed == nil }
+            tasks = allTasks.filter { $0.closed == nil }
         }
     }
 }
 
-struct LeadsListView: View {
-    @StateObject private var vm = LeadsListViewModel()
+struct PendingTaskListView: View {
+    @StateObject private var vm = PendingTaskListViewModel()
 
     var body: some View {
         VStack {
-            // Toggle for closed leads
-            Toggle("Show closed leads", isOn: $vm.showClosed)
+            Toggle("Show closed tasks", isOn: $vm.showClosed)
                 .padding()
 
             if vm.isLoading {
-                ProgressView("Loading leads…")
+                ProgressView("Loading tasks…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                List(vm.leads) { lead in
-                    NavigationLink(destination: LeadDetailView(leadID: lead.id)) {
+                List(vm.tasks) { task in
+                    NavigationLink(destination: PendingTaskDetailView(taskID: task.id)) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(lead.description)
+                            Text(task.description)
                                 .font(.headline)
                                 .lineLimit(1)
-                            Text("Contact: \(lead.contactDate)")
+                            Text("Date: \(task.date)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             HStack(spacing: 12) {
-                                BadgeView(label: "Sent", value: lead.sent != nil)
-                                BadgeView(label: "Closed", value: lead.closed != nil)
+                                BadgeView(label: "Closed", value: task.closed != nil)
                             }
                         }
                         .padding(.vertical, 4)
@@ -70,10 +67,10 @@ struct LeadsListView: View {
                 .listStyle(.plain)
             }
         }
-        .navigationTitle("Leads")
-        .onAppear { vm.fetchLeads() }
+        .navigationTitle("Pending Tasks")
+        .onAppear { vm.fetchTasks() }
         .toolbar {
-            NavigationLink(destination: LeadFormView(onComplete: { vm.fetchLeads() })) {
+            NavigationLink(destination: PendingTaskFormView(onComplete: { vm.fetchTasks() })) {
                 Image(systemName: "plus")
             }
         }
@@ -81,10 +78,9 @@ struct LeadsListView: View {
 }
 
 #Preview {
-    LeadsListView()
+    PendingTaskListView()
 }
 
-// Simple badge visual helper
 private struct BadgeView: View {
     let label: String
     let value: Bool

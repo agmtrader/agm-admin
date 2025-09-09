@@ -37,7 +37,10 @@ actor ApiClient {
 
     func get<T: Decodable>(_ path: String, response: T.Type) async throws -> T {
         let token = try await getToken()
-        let requestURL = baseURL.appendingPathComponent(path)
+        // Build the request URL preserving query parameters (appendingPathComponent would percent-escape "?" and "=")
+        guard let requestURL = URL(string: path, relativeTo: baseURL) else {
+            throw ApiError.unknown(-1)
+        }
         var request = URLRequest(url: requestURL)
         request.httpMethod = "GET"
         request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
@@ -47,7 +50,10 @@ actor ApiClient {
 
     func post<T: Decodable, P: Encodable>(_ path: String, body: P?, response: T.Type) async throws -> T {
         let token = try await getToken()
-        let requestURL = baseURL.appendingPathComponent(path)
+        // Build the request URL preserving query parameters (appendingPathComponent would percent-escape "?" and "=")
+        guard let requestURL = URL(string: path, relativeTo: baseURL) else {
+            throw ApiError.unknown(-1)
+        }
         var request = URLRequest(url: requestURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -102,7 +108,7 @@ actor ApiClient {
     private func currentSessionToken() async -> String? {
         // TODO: Replace with secure storage or dynamic retrieval as needed.
         // Currently returning a hardcoded session token for development purposes.
-        return ""
+        return "9268d027-d378-420e-a88f-128c3466a26c"
     }
 
     // MARK: - Low-level perform

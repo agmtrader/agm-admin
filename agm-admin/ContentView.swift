@@ -11,17 +11,11 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                NavigationLink("Users") {
-                    UsersListView()
-                }
                 NavigationLink("Leads") {
                     LeadsListView()
                 }
-                NavigationLink("Advisors") {
-                    AdvisorListView()
-                }
-                NavigationLink("Accounts") {
-                    AccountListView()
+                NavigationLink("Pending Tasks") {
+                    PendingTaskListView()
                 }
             }
         }
