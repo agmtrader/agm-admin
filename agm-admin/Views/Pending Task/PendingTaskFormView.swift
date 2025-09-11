@@ -14,13 +14,7 @@ struct PendingTaskFormView: View {
     @State private var isSaving = false
     @Environment(\.dismiss) private var dismiss
 
-    // Formatter for backend date string: yyyymmddhhmmss
-    private static let formatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateFormat = "yyyyMMddHHmmss"
-        df.locale = Locale(identifier: "en_US_POSIX")
-        return df
-    }()
+    // Use shared app-wide formatter
 
     private var isEdit: Bool { existingTask != nil }
 
@@ -87,7 +81,7 @@ struct PendingTaskFormView: View {
         tagList = t.tags ?? []
         tagInput = ""
         priority = t.priority
-        if let parsed = Self.formatter.date(from: t.date) {
+        if let parsed = AppDateFormatter.shared.date(from: t.date) {
             date = parsed
         }
     }
@@ -100,7 +94,7 @@ struct PendingTaskFormView: View {
             tags: tagList,
             priority: priority,
             emailsToNotify: nil,
-            date: Self.formatter.string(from: date)
+            date: AppDateFormatter.shared.string(from: date)
         )
     }
 

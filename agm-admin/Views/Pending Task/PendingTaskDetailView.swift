@@ -5,6 +5,7 @@ struct PendingTaskDetailView: View {
     @State private var task: PendingTask?
     @State private var followUps: [PendingTaskFollowUp] = []
     @State private var isLoading = true
+    @State private var showingAddFollowUp = false
 
     var body: some View {
         Group {
@@ -15,22 +16,31 @@ struct PendingTaskDetailView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Description")
-                            .font(.title3.bold())
+                            .font(.headline)
                         Text(task.description)
                             .font(.body)
                         Divider()
                         Text("Follow-ups")
-                            .font(.title3.bold())
+                            .font(.headline)
                         ForEach(followUps) { f in
                             VStack(alignment: .leading) {
-                                Text(f.date)
-                                    .font(.caption)
+                                if let date = AppDateFormatter.shared.date(from: f.date) {
+                                    Text(date.formatted(date: .abbreviated, time: .shortened))
+                                        .font(.headline)
+                                } else {
+                                    Text(f.date)
+                                        .font(.headline)
+                                }
                                 Text(f.description)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
                             }
-                            .padding(8)
-                            .background(Color(.secondarySystemBackground))
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
+                        Button("Add Follow-up") { showingAddFollowUp = true }
+                            .buttonStyle(.borderedProminent)
                     }
                     .padding()
                 }
@@ -43,6 +53,11 @@ struct PendingTaskDetailView: View {
         .toolbar {
             if let task {
                 NavigationLink("Edit", destination: PendingTaskFormView(existingTask: task, onComplete: { Task { await fetch() } }))
+            }
+        }
+        .sheet(isPresented: $showingAddFollowUp) {
+            if let task {
+                PendingTaskFollowUpFormView(taskID: task.id, onComplete: { Task { await fetch(); showingAddFollowUp = false } })
             }
         }
     }

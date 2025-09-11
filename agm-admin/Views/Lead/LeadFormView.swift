@@ -83,7 +83,7 @@ struct LeadFormView: View {
     private func populateFields() {
         guard let l = existingLead else { return }
         descriptionText = l.description
-        if let d = Self.dateFormatter.date(from: l.contactDate) {
+        if let d = AppDateFormatter.shared.date(from: l.contactDate) {
             contactDate = d
         }
         if let cIdx = users.firstIndex(where: { $0.id == l.contactId }) {
@@ -101,7 +101,7 @@ struct LeadFormView: View {
             contactId: users[selectedContactIndex ?? 0].id,
             referrerId: users[selectedReferrerIndex ?? 0].id,
             description: descriptionText,
-            contactDate: Self.dateFormatter.string(from: contactDate),
+            contactDate: AppDateFormatter.shared.string(from: contactDate),
             closed: closed.isEmpty ? nil : closed,
             sent: sent.isEmpty ? nil : sent
         )
@@ -113,7 +113,6 @@ struct LeadFormView: View {
             if let existing = existingLead {
                 _ = try await LeadService.shared.updateLead(by: existing.id, lead: payload())
             } else {
-                // For simplicity no followUps creation here
                 _ = try await LeadService.shared.createLead(lead: payload(), followUps: [])
             }
             dismiss()
@@ -124,14 +123,7 @@ struct LeadFormView: View {
         isSaving = false
     }
 
-    // MARK: - Date Formatter
-
-    private static let dateFormatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateFormat = "yyyyMMddHHmmss"
-        df.timeZone = .current
-        return df
-    }()
+    // Shared date formatter now lives in AppDateFormatter
 
     // MARK: - Fetch Users
 

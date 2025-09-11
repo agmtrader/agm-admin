@@ -9,14 +9,53 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        NavigationStack {
-            List {
-                NavigationLink("Leads") {
-                    LeadsListView()
+        TabView {
+            NavigationStack {
+                List {
+                    NavigationLink("Users") {
+                        UsersListView()
+                    }
+                    NavigationLink("Advisors") {
+                        AdvisorsListView()
+                    }
+                    NavigationLink("Leads") {
+                        LeadsListView()
+                    }
+                    NavigationLink("Applications") {
+                        ApplicationsListView()
+                    }
+                    NavigationLink("Accounts") {
+                        AccountsListView()
+                    }
                 }
-                NavigationLink("Pending Tasks") {
-                    PendingTaskListView()
+                .listStyle(.insetGrouped)
+            }
+            .tabItem {
+                Label("Users", systemImage: "person.2.fill")
+            }
+            NavigationStack {
+                List {
+                    NavigationLink("Pending Tasks") {
+                        PendingTaskListView()
+                    }
+                    NavigationLink("Pending Aliases") {
+                        ContentUnavailableView("Pending Aliases", image: "exclamationmark.triangle.fill", description: Text("Pending Aliases."))
+                    }
+                    NavigationLink("Trade Tickets") {
+                        TradeTicketsView()
+                    }
+                    NavigationLink("Investment Proposals") {
+                        ContentUnavailableView("Investment Proposals", image: "exclamationmark.triangle.fill", description: Text("Investment Proposals."))
+                    }
+                    NavigationLink("Risk Profiles") {
+                        ContentUnavailableView("Risk Profiles", image: "exclamationmark.triangle.fill", description: Text("Risk Profiles."))
+                    }
+
                 }
+                .listStyle(.insetGrouped)
+            }
+            .tabItem {
+                Label("Reports", systemImage: "chart.bar.fill")
             }
         }
     }

@@ -56,9 +56,13 @@ struct LeadsListView: View {
                             Text(lead.description)
                                 .font(.headline)
                                 .lineLimit(1)
-                            Text("Contact: \(lead.contactDate)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            
+                            if let date = AppDateFormatter.shared.date(from: lead.contactDate) {
+                                Text("\(lead.contactDate)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                            }
+                            
                             HStack(spacing: 12) {
                                 BadgeView(label: "Sent", value: lead.sent != nil)
                                 BadgeView(label: "Closed", value: lead.closed != nil)

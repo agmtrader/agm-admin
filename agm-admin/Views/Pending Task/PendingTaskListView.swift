@@ -54,9 +54,15 @@ struct PendingTaskListView: View {
                             Text(task.description)
                                 .font(.headline)
                                 .lineLimit(1)
-                            Text("Date: \(task.date)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            if let date = AppDateFormatter.shared.date(from: task.date) {
+                            Text("\(task.date)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            } else {
+                                Text("\(task.date)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                             HStack(spacing: 12) {
                                 BadgeView(label: "Closed", value: task.closed != nil)
                             }
