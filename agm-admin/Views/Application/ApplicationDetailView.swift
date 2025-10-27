@@ -13,26 +13,25 @@ struct ApplicationDetailView: View {
             } else if let application {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        GroupBox {
+                        GroupBox(content: {
                             VStack(alignment: .leading, spacing: 8) {
                                 LabeledRow(label: "ID", value: application.id)
                                 LabeledRow(label: "Status", value: application.status ?? "-")
                                 LabeledRow(label: "Created", value: formattedDate(application.created))
                                 LabeledRow(label: "Lead ID", value: application.leadId ?? "-")
-                                LabeledRow(label: "User ID", value: application.userId ?? "-")
                             }
-                        } label: {
+                        }, label: {
                             Text("Metadata")
-                        }
+                        })
 
-                        GroupBox {
+                        GroupBox(content: {
                             VStack(alignment: .leading, spacing: 8) {
                                 LabeledRow(label: "Advisor Code", value: application.advisorCode ?? "-")
-                                LabeledRow(label: "Master Account ID", value: application.masterAccountId ?? "-")
+                                LabeledRow(label: "Master Account", value: application.masterAccount ?? "-")
                             }
-                        } label: {
+                        }, label: {
                             Text("Associations")
-                        }
+                        })
                     }
                     .padding()
                 }

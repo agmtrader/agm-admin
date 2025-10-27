@@ -6,6 +6,7 @@ struct UserFormView: View {
 
     @State private var name: String = ""
     @State private var email: String = ""
+    @State private var password: String = ""
 
     @State private var isSaving = false
     @Environment(\.dismiss) private var dismiss
@@ -19,6 +20,7 @@ struct UserFormView: View {
                 TextField("Email", text: $email)
                     .keyboardType(.emailAddress)
                     .autocapitalization(.none)
+                SecureField("Password", text: $password)
             }
         }
         .disabled(isSaving)
@@ -37,7 +39,7 @@ struct UserFormView: View {
     }
 
     private var isFormValid: Bool {
-        !name.isEmpty && !email.isEmpty && email.contains("@")
+        !name.isEmpty && !email.isEmpty && email.contains("@") && !password.isEmpty
     }
 
     private func populateFields() {
@@ -47,7 +49,7 @@ struct UserFormView: View {
     }
 
     private func payload() -> UserPayload {
-        UserPayload(name: name, email: email)
+        UserPayload(name: name, email: email, password: password)
     }
 
     private func save() async {

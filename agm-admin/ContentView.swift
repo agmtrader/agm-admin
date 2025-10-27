@@ -38,17 +38,8 @@ struct ContentView: View {
                     NavigationLink("Pending Tasks") {
                         PendingTaskListView()
                     }
-                    NavigationLink("Pending Aliases") {
-                        ContentUnavailableView("Pending Aliases", image: "exclamationmark.triangle.fill", description: Text("Pending Aliases."))
-                    }
                     NavigationLink("Trade Tickets") {
                         TradeTicketsView()
-                    }
-                    NavigationLink("Investment Proposals") {
-                        ContentUnavailableView("Investment Proposals", image: "exclamationmark.triangle.fill", description: Text("Investment Proposals."))
-                    }
-                    NavigationLink("Risk Profiles") {
-                        ContentUnavailableView("Risk Profiles", image: "exclamationmark.triangle.fill", description: Text("Risk Profiles."))
                     }
 
                 }

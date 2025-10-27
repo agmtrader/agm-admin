@@ -11,7 +11,7 @@ final class AccountsListViewModel: ObservableObject {
         Task {
             do {
                 let fetched = try await AccountService.shared.readAccounts()
-                self.accounts = fetched.sorted { $0.ibkrAccountNumber < $1.ibkrAccountNumber }
+                self.accounts = fetched.sorted { ($0.ibkrAccountNumber ?? "") < ($1.ibkrAccountNumber ?? "") }
             } catch {
                 print("Failed to fetch accounts: \(error)")
             }
@@ -29,18 +29,18 @@ struct AccountsListView: View {
                 ProgressView("Loading accounts…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                List(vm.accounts) { acc in
-                    NavigationLink(destination: AccountDetailView(accountID: acc.id)) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(acc.ibkrAccountNumber)
-                                .font(.headline)
-                            if let userId = acc.userId {
-                                Text("User ID: \(userId)")
+                List {
+                    ForEach(vm.accounts) { acc in
+                        NavigationLink(destination: AccountDetailView(accountID: acc.id)) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(acc.ibkrAccountNumber ?? "-")
+                                    .font(.headline)
+                                Text("Advisor: \(acc.advisorCode.map(String.init) ?? "-")")
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }
+                            .padding(.vertical, 4)
                         }
-                        .padding(.vertical, 4)
                     }
                 }
                 .listStyle(.plain)

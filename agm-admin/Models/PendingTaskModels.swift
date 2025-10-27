@@ -28,13 +28,13 @@ struct PendingTask: Codable, Identifiable {
     let id: String
     let accountId: String
     let description: String
-    let closed: String?
+    let closed: Bool?
     let tags: [String]?
     let priority: Int
     let emailsToNotify: [String]?
     let date: String
-    let createdAt: String?
-    let updatedAt: String?
+    let created: String
+    let updated: String
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -45,8 +45,7 @@ struct PendingTask: Codable, Identifiable {
         case priority
         case emailsToNotify = "emails_to_notify"
         case date
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
+        case created, updated
     }
 }
 
@@ -72,8 +71,8 @@ struct PendingTaskFollowUp: Codable, Identifiable {
     let date: String
     let description: String
     let completed: Bool
-    let createdAt: String?
-    let updatedAt: String?
+    let created: String
+    let updated: String
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -81,7 +80,6 @@ struct PendingTaskFollowUp: Codable, Identifiable {
         case date
         case description
         case completed
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
+        case created, updated
     }
 }

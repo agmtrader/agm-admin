@@ -2,16 +2,14 @@
 
 import Foundation
 
-// Shared base fields common to most backend entities
+// Shared base fields common to most backend entities (`Base` in TS)
 struct Base: Codable, Identifiable {
     let id: String
-    let createdAt: String?
-    let updatedAt: String?
+    let created: String
+    let updated: String
 
     enum CodingKeys: String, CodingKey {
-        case id
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
+        case id, created, updated
     }
 }
 
@@ -24,6 +22,8 @@ struct LeadPayload: Codable {
     let contactDate: String
     let closed: String?
     let sent: String?
+    let emailsToNotify: [String]?
+    let filled: String?
 
     enum CodingKeys: String, CodingKey {
         case contactId = "contact_id"
@@ -32,6 +32,8 @@ struct LeadPayload: Codable {
         case contactDate = "contact_date"
         case closed
         case sent
+        case emailsToNotify = "emails_to_notify"
+        case filled
     }
 }
 
@@ -43,8 +45,10 @@ struct Lead: Codable, Identifiable {
     let contactDate: String
     let closed: String?
     let sent: String?
-    let createdAt: String?
-    let updatedAt: String?
+    let emailsToNotify: [String]?
+    let filled: String?
+    let created: String
+    let updated: String
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -52,10 +56,10 @@ struct Lead: Codable, Identifiable {
         case referrerId = "referrer_id"
         case description
         case contactDate = "contact_date"
-        case closed
-        case sent
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
+        case closed, sent
+        case emailsToNotify = "emails_to_notify"
+        case filled
+        case created, updated
     }
 }
 
@@ -66,12 +70,14 @@ struct FollowUpPayload: Codable {
     let date: String
     let description: String
     let completed: Bool
+    let emailsToNotify: [String]?
 
     enum CodingKeys: String, CodingKey {
         case leadId = "lead_id"
         case date
         case description
         case completed
+        case emailsToNotify = "emails_to_notify"
     }
 }
 
@@ -81,8 +87,9 @@ struct FollowUp: Codable, Identifiable {
     let date: String
     let description: String
     let completed: Bool
-    let createdAt: String?
-    let updatedAt: String?
+    let emailsToNotify: [String]?
+    let created: String
+    let updated: String
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -90,13 +97,7 @@ struct FollowUp: Codable, Identifiable {
         case date
         case description
         case completed
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
+        case emailsToNotify = "emails_to_notify"
+        case created, updated
     }
-}
-
-// MARK: - Generic Responses
-
-struct IDResponse: Codable {
-    let id: String
 }

@@ -13,15 +13,17 @@ struct AccountDetailView: View {
             } else if let account {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        GroupBox {
+                        GroupBox(content: {
                             VStack(alignment: .leading, spacing: 8) {
-                                LabeledRow(label: "IBKR Account", value: account.ibkrAccountNumber)
+                                LabeledRow(label: "IBKR Account", value: account.ibkrAccountNumber ?? "-")
                                 LabeledRow(label: "Username", value: account.ibkrUsername ?? "-")
                                 LabeledRow(label: "Fee Template", value: account.feeTemplate ?? "-")
-                                LabeledRow(label: "Application ID", value: account.applicationId ?? "")
-                                LabeledRow(label: "User ID", value: account.userId ?? "-")
+                                LabeledRow(label: "Application ID", value: account.applicationId ?? "-")
+                                LabeledRow(label: "Advisor Code", value: account.advisorCode.map(String.init) ?? "-")
                             }
-                        } label: { Text("Account") }
+                        }, label: {
+                            Text("Account")
+                        })
                     }
                     .padding()
                 }

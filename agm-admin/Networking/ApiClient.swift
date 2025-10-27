@@ -108,7 +108,7 @@ actor ApiClient {
     private func currentSessionToken() async -> String? {
         // TODO: Replace with secure storage or dynamic retrieval as needed.
         // Currently returning a hardcoded session token for development purposes.
-        return "9268d027-d378-420e-a88f-128c3466a26c"
+        return "all"
     }
 
     // MARK: - Low-level perform

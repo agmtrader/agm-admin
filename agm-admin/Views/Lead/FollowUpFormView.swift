@@ -43,7 +43,8 @@ struct FollowUpFormView: View {
                 leadId: leadID,
                 date: AppDateFormatter.shared.string(from: date),
                 description: descriptionText,
-                completed: completed
+                completed: completed,
+                emailsToNotify: []
             )
             _ = try await LeadService.shared.createFollowUp(for: leadID, followUp: payload)
             dismiss()

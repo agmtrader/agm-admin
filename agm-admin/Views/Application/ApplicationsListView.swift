@@ -20,7 +20,7 @@ final class ApplicationsListViewModel: ObservableObject {
                 async let fetchedAccounts = AccountService.shared.readAccounts()
                 let (apps, accs) = try await (fetchedApps, fetchedAccounts)
                 self.accounts = accs
-                self.allApplications = apps.sorted { ($0.created ?? "") > ($1.created ?? "") }
+                self.allApplications = apps.sorted { $0.created > $1.created }
                 self.applyFilter()
             } catch {
                 print("Failed to fetch applications: \(error)")
@@ -66,7 +66,7 @@ struct ApplicationsListView: View {
                                 BadgeView(label: "Lead", value: app.leadId != nil)
                                 BadgeView(label: "Has Account", value: vm.accounts.contains { $0.applicationId == app.id })
                             }
-                            if let created = app.created, let date = AppDateFormatter.shared.date(from: created) {
+                            if let date = AppDateFormatter.shared.date(from: app.created) {
                                 Text(date.formatted(.dateTime))
                                     .font(.caption)
                                     .foregroundColor(.secondary)

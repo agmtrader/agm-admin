@@ -11,7 +11,7 @@ final class AdvisorsListViewModel: ObservableObject {
         Task {
             do {
                 let fetched = try await AdvisorService.shared.readAdvisors()
-                self.advisors = fetched.sorted { ($0.name ?? "") < ($1.name ?? "") }
+                self.advisors = fetched.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             } catch {
                 print("Failed to fetch advisors: \(error)")
             }
@@ -29,14 +29,16 @@ struct AdvisorsListView: View {
                 ProgressView("Loading advisors…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                List(vm.advisors) { advisor in
-                    NavigationLink(destination: AdvisorDetailView(advisorID: advisor.id)) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(advisor.name ?? "No name")
-                                .font(.headline)
-                            Text(advisor.email ?? "No email")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                List {
+                    ForEach(vm.advisors) { advisor in
+                        NavigationLink(destination: AdvisorDetailView(advisorID: advisor.id)) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(advisor.name)
+                                    .font(.headline)
+                                Text("Agency: \(advisor.agency)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                 }

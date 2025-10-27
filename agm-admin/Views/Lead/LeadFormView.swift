@@ -103,7 +103,9 @@ struct LeadFormView: View {
             description: descriptionText,
             contactDate: AppDateFormatter.shared.string(from: contactDate),
             closed: closed.isEmpty ? nil : closed,
-            sent: sent.isEmpty ? nil : sent
+            sent: sent.isEmpty ? nil : sent,
+            emailsToNotify: [],
+            filled: nil
         )
     }
 

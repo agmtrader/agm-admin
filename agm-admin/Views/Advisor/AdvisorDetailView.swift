@@ -13,9 +13,9 @@ struct AdvisorDetailView: View {
             } else if let advisor {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(advisor.name ?? "No name")
+                        Text(advisor.name)
                             .font(.headline)
-                        Text(advisor.email ?? "No email")
+                        Text("Code: \(advisor.code)")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }

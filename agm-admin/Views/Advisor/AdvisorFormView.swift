@@ -8,6 +8,7 @@ struct AdvisorFormView: View {
     @State private var agency: String = ""
     @State private var hierarchy1: String = ""
     @State private var hierarchy2: String = ""
+    // Advisor code is assigned by backend, display-only when editing
     @State private var code: String = ""
     @State private var contactId: String = ""
 
@@ -23,8 +24,11 @@ struct AdvisorFormView: View {
                 TextField("Agency", text: $agency)
                 TextField("Hierarchy 1", text: $hierarchy1)
                 TextField("Hierarchy 2", text: $hierarchy2)
-                TextField("Code", text: $code)
                 TextField("Contact ID", text: $contactId)
+                if isEdit {
+                    TextField("Code", text: $code)
+                        .disabled(true)
+                }
             }
         }
         .disabled(isSaving)
@@ -47,19 +51,16 @@ struct AdvisorFormView: View {
         !agency.isEmpty &&
         !hierarchy1.isEmpty &&
         !hierarchy2.isEmpty &&
-        Int(code) != nil &&
         !contactId.isEmpty
     }
 
     private func populateFields() {
         guard let a = existingAdvisor else { return }
-        name = a.name ?? ""
-        agency = a.agency ?? ""
-        hierarchy1 = a.hierarchy1 ?? ""
-        hierarchy2 = a.hierarchy2 ?? ""
-        if let codeInt = a.code {
-            code = String(codeInt)
-        }
+        name = a.name
+        agency = a.agency
+        hierarchy1 = a.hierarchy1
+        hierarchy2 = a.hierarchy2
+        code = String(a.code)
         contactId = a.contactId ?? ""
     }
 
@@ -68,7 +69,6 @@ struct AdvisorFormView: View {
                        agency: agency,
                        hierarchy1: hierarchy1,
                        hierarchy2: hierarchy2,
-                       code: Int(code) ?? 0,
                        contactId: contactId)
     }
 
