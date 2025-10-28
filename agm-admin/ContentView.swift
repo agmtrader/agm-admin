@@ -38,9 +38,6 @@ struct ContentView: View {
                     NavigationLink("Pending Tasks") {
                         PendingTaskListView()
                     }
-                    NavigationLink("Trade Tickets") {
-                        TradeTicketsView()
-                    }
 
                 }
                 .listStyle(.insetGrouped)
