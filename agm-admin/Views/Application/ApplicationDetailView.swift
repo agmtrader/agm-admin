@@ -4,6 +4,7 @@ struct ApplicationDetailView: View {
     let applicationID: String
     @State private var application: Application?
     @State private var isLoading = true
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         Group {
@@ -40,6 +41,13 @@ struct ApplicationDetailView: View {
             }
         }
         .navigationTitle("Application")
+        .toolbar {
+            if let application {
+                Button("Open in Dashboard") {
+                    openURL(URL(string: "https://dashboard.agmtechnology.com/applications/\(application.id)")!)
+                }
+            }
+        }
         .task { await fetch() }
     }
 
