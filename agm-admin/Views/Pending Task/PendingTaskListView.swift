@@ -5,6 +5,7 @@ import Combine
 final class PendingTaskListViewModel: ObservableObject {
     @Published var tasks: [PendingTask] = []
     @Published var followUps: [PendingTaskFollowUp] = []
+    @Published var accounts: [Account] = []
     @Published var isLoading: Bool = false
     @Published var showClosed: Bool = false {
         didSet { applyFilter() }
@@ -16,8 +17,14 @@ final class PendingTaskListViewModel: ObservableObject {
         isLoading = true
         Task {
             do {
-                let (fetchedTasks, fetchedFollowUps) = try await PendingTaskService.shared.readTasks()
+                async let tasksTuple = PendingTaskService.shared.readTasks()
+                async let fetchedAccounts = AccountService.shared.readAccounts()
+
+                let (tasksData, accountsData) = try await (tasksTuple, fetchedAccounts)
+                let (fetchedTasks, fetchedFollowUps) = tasksData
+
                 self.followUps = fetchedFollowUps
+                self.accounts = accountsData
                 self.allTasks = fetchedTasks.sorted { $0.date > $1.date }
                 self.applyFilter()
             } catch {
@@ -33,6 +40,11 @@ final class PendingTaskListViewModel: ObservableObject {
         } else {
             tasks = allTasks.filter { $0.closed == nil }
         }
+    }
+
+    // Helper to lookup account by id
+    func account(for id: String) -> Account? {
+        accounts.first { $0.id == id }
     }
 }
 
@@ -54,7 +66,14 @@ struct PendingTaskListView: View {
                             Text(task.description)
                                 .font(.headline)
                                 .lineLimit(1)
-                            if let date = AppDateFormatter.shared.date(from: task.date) {
+                            // Account number
+                            if let account = vm.account(for: task.accountId), let number = account.ibkrAccountNumber {
+                                Text(number)
+                                    .font(.subheadline)
+                                    .foregroundColor(.blue)
+                            }
+
+                            if let _ = AppDateFormatter.shared.date(from: task.date) {
                             Text("\(task.date)")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
