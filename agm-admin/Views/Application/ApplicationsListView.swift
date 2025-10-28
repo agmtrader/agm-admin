@@ -5,8 +5,9 @@ import Combine
 final class ApplicationsListViewModel: ObservableObject {
     @Published var applications: [Application] = []
     @Published var accounts: [Account] = []
+    @Published var contacts: [Contact] = []
     @Published var isLoading: Bool = false
-    @Published var showWithAccounts: Bool = true {
+    @Published var showWithAccounts: Bool = false {
         didSet { applyFilter() }
     }
 
@@ -18,8 +19,10 @@ final class ApplicationsListViewModel: ObservableObject {
             do {
                 async let fetchedApps = ApplicationService.shared.readApplications()
                 async let fetchedAccounts = AccountService.shared.readAccounts()
-                let (apps, accs) = try await (fetchedApps, fetchedAccounts)
+                async let fetchedContacts = ContactService.shared.readContacts()
+                let (apps, accs, conts) = try await (fetchedApps, fetchedAccounts, fetchedContacts)
                 self.accounts = accs
+                self.contacts = conts
                 self.allApplications = apps.sorted { $0.created > $1.created }
                 self.applyFilter()
             } catch {
@@ -44,8 +47,12 @@ struct ApplicationsListView: View {
     @StateObject private var vm = ApplicationsListViewModel()
 
     private func title(for app: Application) -> String {
-        // simplistic placeholder; backend should include summary field
-        app.id
+        if let contactId = app.contactId,
+           let contact = vm.contacts.first(where: { $0.id == contactId }),
+           let name = contact.name, !name.isEmpty {
+            return name
+        }
+        return app.contactId ?? app.id
     }
 
     var body: some View {

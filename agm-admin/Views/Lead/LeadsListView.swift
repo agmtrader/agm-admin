@@ -5,6 +5,7 @@ import Combine
 final class LeadsListViewModel: ObservableObject {
     @Published var leads: [Lead] = []
     @Published var followUps: [FollowUp] = []
+    @Published var contacts: [Contact] = []
     @Published var isLoading: Bool = false
     @Published var showClosed: Bool = false {
         didSet { applyFilter() }
@@ -16,8 +17,13 @@ final class LeadsListViewModel: ObservableObject {
         isLoading = true
         Task {
             do {
-                let (fetchedLeads, fetchedFollowUps) = try await LeadService.shared.readLeads()
+                async let leadsRes = LeadService.shared.readLeads()
+                async let contactsRes = ContactService.shared.readContacts()
+
+                let ((fetchedLeads, fetchedFollowUps), fetchedContacts) = try await (leadsRes, contactsRes)
+
                 self.followUps = fetchedFollowUps
+                self.contacts = fetchedContacts
                 self.allLeads = fetchedLeads.sorted { $0.contactDate > $1.contactDate }
                 self.applyFilter()
             } catch {
@@ -53,12 +59,23 @@ struct LeadsListView: View {
                 List(vm.leads) { lead in
                     NavigationLink(destination: LeadDetailView(leadID: lead.id)) {
                         VStack(alignment: .leading, spacing: 4) {
+                            // Contact Name
+                            if let contact = vm.contacts.first(where: { $0.id == lead.contactId }) {
+                                Text(contact.name ?? "No name")
+                                    .font(.headline)
+                            } else {
+                                Text("No contact")
+                                    .font(.headline)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            // Lead description
                             Text(lead.description)
-                                .font(.headline)
+                                .font(.subheadline)
                                 .lineLimit(1)
                             
                             if let date = AppDateFormatter.shared.date(from: lead.contactDate) {
-                                Text("\(lead.contactDate)")
+                                Text(date.formatted(.dateTime))
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                             }

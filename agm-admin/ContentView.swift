@@ -12,8 +12,8 @@ struct ContentView: View {
         TabView {
             NavigationStack {
                 List {
-                    NavigationLink("Users") {
-                        UsersListView()
+                    NavigationLink("Contacts") {
+                        ContactsListView()
                     }
                     NavigationLink("Advisors") {
                         AdvisorsListView()

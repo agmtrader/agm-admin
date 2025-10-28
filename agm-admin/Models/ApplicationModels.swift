@@ -2,7 +2,7 @@ import Combine
 
 // MARK: - ApplicationPayload
 struct ApplicationPayload: Codable {
-    let advisorCode: String?
+    let advisorCode: Int?
     let masterAccount: String?
     let leadId: String?
     let application: String? // JSON string or ID referencing full application
@@ -29,7 +29,7 @@ struct Application: Codable, Identifiable {
     let updated: String
 
     // Application fields
-    let advisorCode: String?
+    let advisorCode: Int?
     let masterAccount: String?
     let leadId: String?
     let application: String?
@@ -46,5 +46,22 @@ struct Application: Codable, Identifiable {
         case dateSentToIbkr = "date_sent_to_ibkr"
         case status
         case contactId = "contact_id"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        // Base
+        id = try container.decode(String.self, forKey: .id)
+        created = try container.decode(String.self, forKey: .created)
+        updated = try container.decode(String.self, forKey: .updated)
+        advisorCode = try container.decodeIfPresent(Int.self, forKey: .advisorCode)
+
+        masterAccount = try container.decodeIfPresent(String.self, forKey: .masterAccount)
+        leadId = try container.decodeIfPresent(String.self, forKey: .leadId)
+        application = try container.decodeIfPresent(String.self, forKey: .application)
+        dateSentToIbkr = try container.decodeIfPresent(String.self, forKey: .dateSentToIbkr)
+        status = try container.decodeIfPresent(String.self, forKey: .status)
+        contactId = try container.decodeIfPresent(String.self, forKey: .contactId)
     }
 }

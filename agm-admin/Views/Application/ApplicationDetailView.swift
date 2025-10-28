@@ -26,7 +26,7 @@ struct ApplicationDetailView: View {
 
                         GroupBox(content: {
                             VStack(alignment: .leading, spacing: 8) {
-                                LabeledRow(label: "Advisor Code", value: application.advisorCode ?? "-")
+                                LabeledRow(label: "Advisor Code", value: String(application.advisorCode ?? 0))
                                 LabeledRow(label: "Master Account", value: application.masterAccount ?? "-")
                             }
                         }, label: {
@@ -65,7 +65,6 @@ struct ApplicationDetailView: View {
     NavigationStack { ApplicationDetailView(applicationID: "demo") }
 }
 
-// Rename helper view to avoid clash with SwiftUI's LabeledContent (iOS 17)
 private struct LabeledRow: View {
     let label: String
     let value: String
