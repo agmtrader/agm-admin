@@ -24,6 +24,8 @@ final class TradeTicketsViewModel: ObservableObject {
 // MARK: - TradeTicketsView
 struct TradeTicketsView: View {
     @StateObject private var vm = TradeTicketsViewModel()
+    private struct TicketSheetItem: Identifiable { let id: String; let title: String }
+    @State private var sheetItem: TicketSheetItem? = nil
 
     var body: some View {
         Group {
@@ -32,15 +34,21 @@ struct TradeTicketsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(vm.tickets) { ticket in
-                    NavigationLink(destination: TradeTicketTradesView(ticketID: ticket.id, title: ticket.name)) {
+                    Button {
+                        sheetItem = TicketSheetItem(id: ticket.id, title: ticket.name)
+                    } label: {
                         Text(ticket.name)
                     }
+                    .buttonStyle(.plain)
                 }
                 .listStyle(.plain)
             }
         }
         .navigationTitle("Trade Tickets")
         .onAppear { vm.fetchTickets() }
+        .sheet(item: $sheetItem) { item in
+            TradeTicketTradesView(ticketID: item.id, title: item.title)
+        }
         // no toolbar; read-only list
     }
 }

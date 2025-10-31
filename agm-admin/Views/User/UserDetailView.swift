@@ -13,16 +13,19 @@ struct UserDetailView: View {
             } else if let user {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(user.name ?? "No name")
-                            .font(.headline)
-                        Text(user.email ?? "No email")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                        GroupBox(content: {
+                            VStack(alignment: .leading, spacing: 8) {
+                                LabeledRow(label: "Name", value: user.name ?? "-")
+                                LabeledRow(label: "Email", value: user.email ?? "-")
+                            }
+                        }, label: {
+                            Text("User")
+                        })
                     }
                     .padding()
                 }
             } else {
-                Text("User not found")
+                ContentUnavailableView("User not found", image: "xmark.circle.fill", description: Text("The requested user could not be located."))
             }
         }
         .navigationTitle("User")

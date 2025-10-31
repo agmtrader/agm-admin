@@ -12,17 +12,20 @@ struct AdvisorDetailView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let advisor {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text(advisor.name)
-                            .font(.headline)
-                        Text("Code: \(advisor.code)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
+                    GroupBox(content: {
+                        VStack(alignment: .leading, spacing: 8) {
+                            LabeledRow(label: "Name", value: advisor.name)
+                            LabeledRow(label: "Code", value: String(advisor.code))
+                            LabeledRow(label: "Agency", value: advisor.agency)
+                            LabeledRow(label: "Hierarchy 1", value: advisor.hierarchy1)
+                            LabeledRow(label: "Hierarchy 2", value: advisor.hierarchy2)
+                            LabeledRow(label: "Contact ID", value: advisor.contactId ?? "-")
+                        }
+                    })
                     .padding()
                 }
             } else {
-                Text("Advisor not found")
+                ContentUnavailableView("Advisor not found", image: "xmark.circle.fill", description: Text("The requested advisor could not be located."))
             }
         }
         .navigationTitle("Advisor")

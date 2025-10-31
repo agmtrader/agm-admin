@@ -22,8 +22,6 @@ struct AccountDetailView: View {
                                 LabeledRow(label: "Application ID", value: account.applicationId ?? "-")
                                 LabeledRow(label: "Advisor Code", value: account.advisorCode.map(String.init) ?? "-")
                             }
-                        }, label: {
-                            Text("Account")
                         })
                     }
                     .padding()
@@ -57,7 +55,7 @@ struct AccountDetailView: View {
     NavigationStack { AccountDetailView(accountID: "demo") }
 }
 
-private struct LabeledRow: View {
+struct LabeledRow: View {
     let label: String
     let value: String
 

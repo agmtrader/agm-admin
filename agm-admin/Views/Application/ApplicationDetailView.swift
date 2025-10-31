@@ -72,19 +72,3 @@ struct ApplicationDetailView: View {
 #Preview {
     NavigationStack { ApplicationDetailView(applicationID: "demo") }
 }
-
-private struct LabeledRow: View {
-    let label: String
-    let value: String
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(label)
-                .font(.subheadline.weight(.semibold))
-            Spacer()
-            Text(value)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-    }
-}

@@ -22,6 +22,10 @@ final class AdvisorsListViewModel: ObservableObject {
 
 struct AdvisorsListView: View {
     @StateObject private var vm = AdvisorsListViewModel()
+    @State private var isShowingForm: Bool = false
+
+    private struct AdvisorSheetItem: Identifiable { let id: String }
+    @State private var sheetItem: AdvisorSheetItem? = nil
 
     var body: some View {
         Group {
@@ -31,7 +35,9 @@ struct AdvisorsListView: View {
             } else {
                 List {
                     ForEach(vm.advisors) { advisor in
-                        NavigationLink(destination: AdvisorDetailView(advisorID: advisor.id)) {
+                        Button {
+                            sheetItem = AdvisorSheetItem(id: advisor.id)
+                        } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(advisor.name)
                                     .font(.headline)
@@ -40,6 +46,7 @@ struct AdvisorsListView: View {
                                     .foregroundColor(.secondary)
                             }
                         }
+                        .buttonStyle(.plain)
                     }
                 }
                 .listStyle(.plain)
@@ -48,9 +55,20 @@ struct AdvisorsListView: View {
         .navigationTitle("Advisors")
         .onAppear { vm.fetchAdvisors() }
         .toolbar {
-            NavigationLink(destination: AdvisorFormView(onComplete: { vm.fetchAdvisors() })) {
+            Button {
+                isShowingForm = true
+            } label: {
                 Image(systemName: "plus")
             }
+        }
+        .sheet(item: $sheetItem) { item in
+            AdvisorDetailView(advisorID: item.id)
+        }
+        .sheet(isPresented: $isShowingForm) {
+            AdvisorFormView(onComplete: {
+                vm.fetchAdvisors()
+                isShowingForm = false
+            })
         }
     }
 }

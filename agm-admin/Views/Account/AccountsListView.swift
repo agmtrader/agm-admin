@@ -108,6 +108,8 @@ final class AccountsListViewModel: ObservableObject {
 // MARK: - View
 struct AccountsListView: View {
     @StateObject private var vm = AccountsListViewModel()
+    private struct AccountSheetItem: Identifiable { let id: String }
+    @State private var sheetItem: AccountSheetItem? = nil
 
     var body: some View {
         VStack {
@@ -142,7 +144,9 @@ struct AccountsListView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     List(vm.filteredAccounts) { acc in
-                        NavigationLink(destination: AccountDetailView(accountID: acc.id)) {
+                        Button {
+                            sheetItem = AccountSheetItem(id: acc.id)
+                        } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(acc.alias ?? acc.ibkrAccountNumber ?? "-")
                                     .font(.headline)
@@ -163,6 +167,7 @@ struct AccountsListView: View {
                             }
                             .padding(.vertical, 4)
                         }
+                        .buttonStyle(.plain)
                     }
                     .listStyle(.plain)
                 }
@@ -170,6 +175,9 @@ struct AccountsListView: View {
         }
         .navigationTitle("Accounts")
         .onAppear { vm.fetch() }
+        .sheet(item: $sheetItem) { item in
+            AccountDetailView(accountID: item.id)
+        }
     }
 
     private func advisorFilterLabel() -> String {

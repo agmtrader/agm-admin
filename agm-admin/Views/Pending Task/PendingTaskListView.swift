@@ -50,6 +50,10 @@ final class PendingTaskListViewModel: ObservableObject {
 
 struct PendingTaskListView: View {
     @StateObject private var vm = PendingTaskListViewModel()
+    @State private var isShowingForm: Bool = false
+
+    private struct TaskSheetItem: Identifiable { let id: String }
+    @State private var sheetItem: TaskSheetItem? = nil
 
     var body: some View {
         VStack {
@@ -61,7 +65,9 @@ struct PendingTaskListView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(vm.tasks) { task in
-                    NavigationLink(destination: PendingTaskDetailView(taskID: task.id)) {
+                    Button {
+                        sheetItem = TaskSheetItem(id: task.id)
+                    } label: {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(task.description)
                                 .font(.headline)
@@ -88,6 +94,7 @@ struct PendingTaskListView: View {
                         }
                         .padding(.vertical, 4)
                     }
+                    .buttonStyle(.plain)
                 }
                 .listStyle(.plain)
             }
@@ -95,9 +102,20 @@ struct PendingTaskListView: View {
         .navigationTitle("Pending Tasks")
         .onAppear { vm.fetchTasks() }
         .toolbar {
-            NavigationLink(destination: PendingTaskFormView(onComplete: { vm.fetchTasks() })) {
+            Button {
+                isShowingForm = true
+            } label: {
                 Image(systemName: "plus")
             }
+        }
+        .sheet(item: $sheetItem) { item in
+            PendingTaskDetailView(taskID: item.id)
+        }
+        .sheet(isPresented: $isShowingForm) {
+            PendingTaskFormView(onComplete: {
+                vm.fetchTasks()
+                isShowingForm = false
+            })
         }
     }
 }

@@ -45,6 +45,8 @@ final class ApplicationsListViewModel: ObservableObject {
 
 struct ApplicationsListView: View {
     @StateObject private var vm = ApplicationsListViewModel()
+    private struct AppSheetItem: Identifiable { let id: String }
+    @State private var sheetItem: AppSheetItem? = nil
 
     private func title(for app: Application) -> String {
         if let contactId = app.contactId,
@@ -65,7 +67,9 @@ struct ApplicationsListView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(vm.applications) { app in
-                    NavigationLink(destination: ApplicationDetailView(applicationID: app.id)) {
+                    Button {
+                        sheetItem = AppSheetItem(id: app.id)
+                    } label: {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(title(for: app))
                                 .font(.headline)
@@ -81,12 +85,16 @@ struct ApplicationsListView: View {
                         }
                         .padding(.vertical, 4)
                     }
+                    .buttonStyle(.plain)
                 }
                 .listStyle(.plain)
             }
         }
         .navigationTitle("Applications")
         .onAppear { vm.fetch() }
+        .sheet(item: $sheetItem) { item in
+            ApplicationDetailView(applicationID: item.id)
+        }
     }
 }
 

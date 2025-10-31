@@ -12,11 +12,19 @@ struct ContactDetailView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let contact {
                 ScrollView {
-                    ContactCardView(contact: contact)
+                    GroupBox(content: {
+                        VStack(alignment: .leading, spacing: 8) {
+                            LabeledRow(label: "Name", value: contact.name ?? "-")
+                            LabeledRow(label: "Email", value: contact.email ?? "-")
+                            LabeledRow(label: "Phone", value: contact.phone ?? "-")
+                            LabeledRow(label: "Country", value: contact.country ?? "-")
+                            LabeledRow(label: "Company", value: contact.companyName ?? "-")
+                        }
+                    })
                         .padding()
                 }
             } else {
-                Text("Contact not found")
+                ContentUnavailableView("Contact not found", image: "xmark.circle.fill", description: Text("The requested contact could not be located."))
             }
         }
         .navigationTitle("Contact")

@@ -45,6 +45,10 @@ final class LeadsListViewModel: ObservableObject {
 
 struct LeadsListView: View {
     @StateObject private var vm = LeadsListViewModel()
+    @State private var isShowingForm: Bool = false
+
+    private struct LeadSheetItem: Identifiable { let id: String }
+    @State private var sheetItem: LeadSheetItem? = nil
 
     var body: some View {
         VStack {
@@ -57,7 +61,9 @@ struct LeadsListView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(vm.leads) { lead in
-                    NavigationLink(destination: LeadDetailView(leadID: lead.id)) {
+                    Button {
+                        sheetItem = LeadSheetItem(id: lead.id)
+                    } label: {
                         VStack(alignment: .leading, spacing: 4) {
                             // Contact Name
                             if let contact = vm.contacts.first(where: { $0.id == lead.contactId }) {
@@ -87,6 +93,7 @@ struct LeadsListView: View {
                         }
                         .padding(.vertical, 4)
                     }
+                    .buttonStyle(.plain)
                 }
                 .listStyle(.plain)
             }
@@ -94,9 +101,20 @@ struct LeadsListView: View {
         .navigationTitle("Leads")
         .onAppear { vm.fetchLeads() }
         .toolbar {
-            NavigationLink(destination: LeadFormView(onComplete: { vm.fetchLeads() })) {
+            Button {
+                isShowingForm = true
+            } label: {
                 Image(systemName: "plus")
             }
+        }
+        .sheet(item: $sheetItem) { item in
+            LeadDetailView(leadID: item.id)
+        }
+        .sheet(isPresented: $isShowingForm) {
+            LeadFormView(onComplete: {
+                vm.fetchLeads()
+                isShowingForm = false
+            })
         }
     }
 }

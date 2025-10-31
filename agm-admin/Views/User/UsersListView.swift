@@ -22,6 +22,10 @@ final class UsersListViewModel: ObservableObject {
 
 struct UsersListView: View {
     @StateObject private var vm = UsersListViewModel()
+    @State private var isShowingForm: Bool = false
+
+    private struct UserSheetItem: Identifiable { let id: String }
+    @State private var sheetItem: UserSheetItem? = nil
 
     var body: some View {
         Group {
@@ -30,7 +34,9 @@ struct UsersListView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(vm.users) { user in
-                    NavigationLink(destination: UserDetailView(userID: user.id)) {
+                    Button {
+                        sheetItem = UserSheetItem(id: user.id)
+                    } label: {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(user.name ?? "No name")
                             .font(.headline)
@@ -40,6 +46,7 @@ struct UsersListView: View {
                         }
                         .padding(.vertical, 4)
                     }
+                    .buttonStyle(.plain)
                 }
                 .listStyle(.plain)
             }
@@ -47,9 +54,20 @@ struct UsersListView: View {
         .navigationTitle("Users")
         .onAppear { vm.fetchUsers() }
         .toolbar {
-            NavigationLink(destination: UserFormView(onComplete: { vm.fetchUsers() })) {
+            Button {
+                isShowingForm = true
+            } label: {
                 Image(systemName: "plus")
             }
+        }
+        .sheet(item: $sheetItem) { item in
+            UserDetailView(userID: item.id)
+        }
+        .sheet(isPresented: $isShowingForm) {
+            UserFormView(onComplete: {
+                vm.fetchUsers()
+                isShowingForm = false
+            })
         }
     }
 }
