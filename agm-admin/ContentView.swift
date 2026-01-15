@@ -27,6 +27,9 @@ struct ContentView: View {
                     NavigationLink("Accounts") {
                         AccountsListView()
                     }
+                    NavigationLink("Trade Requests") {
+                        TradeRequestsListView()
+                    }
                 }
                 .listStyle(.insetGrouped)
             }
