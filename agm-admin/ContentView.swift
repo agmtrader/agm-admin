@@ -18,9 +18,6 @@ struct ContentView: View {
                     NavigationLink("Advisors") {
                         AdvisorsListView()
                     }
-                    NavigationLink("Leads") {
-                        LeadsListView()
-                    }
                     NavigationLink("Applications") {
                         ApplicationsListView()
                     }
@@ -35,18 +32,6 @@ struct ContentView: View {
             }
             .tabItem {
                 Label("Users", systemImage: "person.2.fill")
-            }
-            NavigationStack {
-                List {
-                    NavigationLink("Pending Tasks") {
-                        PendingTaskListView()
-                    }
-
-                }
-                .listStyle(.insetGrouped)
-            }
-            .tabItem {
-                Label("Reports", systemImage: "chart.bar.fill")
             }
         }
     }
